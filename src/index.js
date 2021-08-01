@@ -53,12 +53,37 @@ function subscribe(name, onChange) {
 function update(name, updator) {
   store[name].state = updator(store[name].state)
 
+  Storage.setItem(TODO_STORE, store[name].state)
+
   store[name].listeners.forEach(listener => listener(store[name].state))
+}
+
+const Storage = {
+  getItem(name) {
+    const item = localStorage.getItem(name)
+    if (item) {
+      return JSON.parse(item)
+    }
+    return undefined
+  },
+  setItem(key, value) {
+    localStorage.setItem(key, JSON.stringify(value))
+  }
+}
+
+function UUID() {
+  let counter = 0
+  return () => {
+    counter++
+    return counter
+  }
 }
 
 // ---
 
 const TODO_STORE = "todo"
+
+const getUUID = UUID()
 
 function iconButton(iconName, props, events) {
   const iconEl = createElement("i", {className: `fa fa-${iconName}`})
@@ -70,7 +95,7 @@ function iconButton(iconName, props, events) {
 function todoForm() {
   const onSubmit = e => {
     const todoText = textArea.value
-    update(TODO_STORE, todos => [...todos, {text: todoText, id: Symbol()}])
+    update(TODO_STORE, todos => [...todos, {text: todoText, id: getUUID()}])
     textArea.value = ""
     e.preventDefault()
   }
@@ -116,5 +141,6 @@ function todoList() {
 
 const root = document.getElementById("root")
 
-createStore(TODO_STORE, [])
+const initialTodos = Storage.getItem(TODO_STORE)
+createStore(TODO_STORE, initialTodos || [])
 append(root, todoForm(), todoList())
