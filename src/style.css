@@ -1,0 +1,41 @@
+#root {
+    width: 800px;
+    margin: 20px auto;
+}
+
+.todo-input {
+    resize: none;
+    height: 80px;
+}
+
+.todo-form .button {
+    width: 100px;
+    align-self: flex-end;
+    margin-top: 20px;
+}
+
+.todo-form {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.todos {
+    padding: 0;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.todos li {
+    margin-bottom: 10px;
+}
+
+.todo {
+    background-color: lightgray;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    box-sizing: border-box;
+}
