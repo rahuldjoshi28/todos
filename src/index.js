@@ -1,4 +1,4 @@
-import {append, createElement, Events} from "./append.js";
+import {append, createElement, Events} from "./elements.js";
 import {createStore, subscribe, update} from "./store.js";
 import {Storage} from "./storage.js";
 
