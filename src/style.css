@@ -38,4 +38,12 @@ ul {
     padding: 10px;
     display: flex;
     box-sizing: border-box;
+    position: relative;
+}
+
+.todo .delete-button {
+    color: red;
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }

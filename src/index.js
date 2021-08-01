@@ -3,7 +3,8 @@ const PropsMap = {
 }
 
 const Events = {
-  SUBMIT: "submit"
+  SUBMIT: "submit",
+  CLICK: "click"
 }
 
 function addListeners(node, events) {
@@ -29,7 +30,6 @@ function createElement(type, props = {}, events = {}) {
 }
 
 function append(parent, ...children) {
-  console.log(JSON.stringify(children))
   children.forEach(child => {
     parent.appendChild(child)
   })
@@ -60,6 +60,13 @@ function update(name, updator) {
 
 const TODO_STORE = "todo"
 
+function iconButton(iconName, props, events) {
+  const iconEl = createElement("i", {className: `fa fa-${iconName}`})
+  const button = createElement("button", props, events)
+
+  return append(button, iconEl)
+}
+
 function todoForm() {
   const onSubmit = e => {
     const todoText = textArea.value
@@ -80,7 +87,13 @@ function todoForm() {
 }
 
 function todoBox(todo) {
-  return createElement("articles", {children: todo.text, className: "todo"})
+  const deleteTODO = () => {
+    update(TODO_STORE, todos => todos.filter(({id}) => id !== todo.id))
+  }
+
+  const deleteBtn = iconButton("trash", {className: "delete-button"}, {[Events.CLICK]: deleteTODO})
+  const card = createElement("article", {children: todo.text, className: "todo"})
+  return append(card, deleteBtn)
 }
 
 function todoList() {
