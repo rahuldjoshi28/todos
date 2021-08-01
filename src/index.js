@@ -92,10 +92,10 @@ function iconButton(iconName, props, events) {
   return append(button, iconEl)
 }
 
-function todoForm() {
+function todoForm(initialValue = "", handleSubmit) {
   const onSubmit = e => {
     const todoText = textArea.value
-    update(TODO_STORE, todos => [...todos, {text: todoText, id: getUUID()}])
+    handleSubmit({text: todoText, id: getUUID()})
     textArea.value = ""
     e.preventDefault()
   }
@@ -103,6 +103,7 @@ function todoForm() {
   const textArea = createElement("textarea", {
     className: "todo-input",
     placeholder: "Please enter todo here...",
+    value: initialValue,
     required: true
   })
   const submitButton = createElement("button", {className: "button", type: "submit", children: "Add"})
@@ -111,14 +112,33 @@ function todoForm() {
   return append(form, textArea, submitButton)
 }
 
+function editModal(todo) {
+  const editTodo = newTodo => {
+    update(TODO_STORE, todos => todos.map(itr => {
+      if (itr.id === todo.id) return {...itr, text: newTodo.text}
+      return itr
+    }))
+  }
+
+  const cancelButton = iconButton("window-close", {className: "modal-close"}, {[Events.CLICK]: () => overlay.remove()})
+  const modal = createElement("div", {className: "modal"})
+  const overlay = createElement("div", {className: "overlay"})
+
+  return append(overlay, append(modal, cancelButton, todoForm(todo.text, editTodo)))
+}
+
 function todoBox(todo) {
   const deleteTODO = () => {
     update(TODO_STORE, todos => todos.filter(({id}) => id !== todo.id))
   }
+  const openEditModal = () => {
+    card.appendChild(editModal(todo))
+  }
 
   const deleteBtn = iconButton("trash", {className: "delete-button"}, {[Events.CLICK]: deleteTODO})
+  const editBtn = iconButton("edit", {className: "edit-button"}, {[Events.CLICK]: openEditModal})
   const card = createElement("article", {children: todo.text, className: "todo"})
-  return append(card, deleteBtn)
+  return append(card, editBtn, deleteBtn)
 }
 
 function todoList() {
@@ -141,6 +161,10 @@ function todoList() {
 
 const root = document.getElementById("root")
 
+function addTodo(newTodo) {
+  update(TODO_STORE, todos => [...todos, newTodo])
+}
+
 const initialTodos = Storage.getItem(TODO_STORE)
 createStore(TODO_STORE, initialTodos || [])
-append(root, todoForm(), todoList())
+append(root, todoForm("", addTodo), todoList())
